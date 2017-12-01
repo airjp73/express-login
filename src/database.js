@@ -2,7 +2,7 @@ var userModelErrorMessage = "express-login -- no database access provided. Provi
 
 module.exports = {
   userModel: undefined,
-  async getUser(selection, projection = "") {
+  async getUser(selection, projection = []) {
     if ( !this.userModel )
       throw new Error(userModelErrorMessage)
 

@@ -4,7 +4,7 @@
 
 
 module.exports = {
-
+  constants: require('./constants.js'),
 
   /////////Database Access
   //Provide a userModel (mongoose schema) in options

@@ -2,6 +2,7 @@ var LocalStrategy = require("passport-local").Strategy
 var crypto = require("crypto")
 
 var config = require('./config.js')
+require("./constants.js")
 
 module.exports = function(passport) {
   //Serialize and Deserialize
@@ -20,9 +21,9 @@ module.exports = function(passport) {
   })
 
   //Local Signup
-  passport.use("local-signup",  new LocalStrategy({
-      usernameField : "email",
-      passwordField : "password",
+  passport.use(PASSPORT_LOCAL_SIGNUP,  new LocalStrategy({
+      usernameField : EMAIL_FIELD,
+      passwordField : PASSWORD_FIELD,
       passReqToCallback : true
     },
     async (req, email, password, done) => {
@@ -31,7 +32,7 @@ module.exports = function(passport) {
         //check for existing user
         var user = await config.database.getUser({email: email})
         if (user)
-          return done(null, false, {message: "email in use"})
+          return done(null, false, {message: EMAIL_FIELD + " in use"})
 
         var token = crypto.randomBytes(16).toString('hex')
         var hash  = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
@@ -56,22 +57,22 @@ module.exports = function(passport) {
   ))
 
   //Local Login
-  passport.use("local-login", new LocalStrategy ({
-      usernameField : "email",
-      passwordField : "password",
+  passport.use(PASSPORT_LOCAL_LOGIN, new LocalStrategy ({
+      usernameField : EMAIL_FIELD,
+      passwordField : PASSWORD_FIELD,
       passReqToCallback : true
     },
     async (req, email, password, done) => {
       try {
 
-        var user = await config.database.getUser({email: email}, "+password")
+        var user = await config.database.getUser({EMAIL_FIELD: email}, [PASSWORD_FIELD])
         if (!user)
           return done(null, false, {message : "no user found"})
-        if (!bcrypt.compareSync(password, user.password))
+        if (!bcrypt.compareSync(password, user[PASSWORD_FIELD]))
           return done(null, false, {message : "invalid password"})
 
         //make password undefined just to be safe
-        user.password = undefined
+        user[PASSWORD_FIELD] = undefined
         return done(null, user)
 
       }

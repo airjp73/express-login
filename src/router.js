@@ -1,73 +1,78 @@
-/*var express = require("express")
+//3rd party
+var express = require("express")
 var passport = require("passport")
-var api = express.Router()
-var User = require("../models/user.js")
 
-//custom middleware
+//middleware
 var requireLoggedIn = require("./middleware/requireLoggedIn.js")
 var requireFields = require("./middleware/requireFields.js")
 var handleErrors = require("./middleware/handleErrors.js")
 
+//modules
+var controllers = require("./controllers.js")
+require("./constants.js")
+
+//router
+var api = express.Router()
 api.use(handleErrors)
 
-//controllers
-var controllers = require("./controllers.js")
-
-//Routes
-  //login
-  //logout
-  //signup
-  //resendConfirmation
-  //confirmEmail
-  //changePassword
-  //forgotPassword
-  //resetPassword
-
-api.route("/login").post(
-  requireFields(["email", "password"]),
-  passport.authenticate('local-login'),
+api.route( LOGIN_ROUTE ).post(
+  requireFields([
+    EMAIL_FIELD,
+    PASSWORD_FIELD
+  ]),
+  passport.authenticate(PASSPORT_LOCAL_LOGIN),
   controllers.login
 )
 
-api.route("/logout").post(
+api.route( LOGOUT_ROUTE ).post(
   controllers.logout
 )
 
-api.route("/signup").post(
-  requireFields(["email", "profileName", "password"]),
-  passport.authenticate('local-signup'),
+api.route( SIGNUP_ROUTE ).post(
+  requireFields([
+    EMAIL_FIELD,
+    PASSWORD_FIELD
+  ]),
+  passport.authenticate(PASSPORT_LOCAL_SIGNUP),
   controllers.signup
 )
 
-api.route("/resendConfirmation").post(
+api.route( RESEND_CONFIRMATION_ROUTE ).post(
   requireLoggedIn,
-  User.findUserFromRequest(null, "+confirmEmailToken"),
   controllers.resendConfirmation
 )
 
-api.route("/confirmEmail").post(
-  requireFields(["confirmEmailToken"]),
-  User.findUserFromRequest("confirmEmailToken", "+confirmEmailToken"),
+api.route( CONFIRM_EMAIL_ROUTE ).post(
+  requireFields([
+    CONFIRM_EMAIL_TOKEN_FIELD
+  ]),
   controllers.confirmEmail
 )
 
-api.route("/changePassword").post(
+api.route( CHANGE_PASSWORD_ROUTE ).post(
   requireLoggedIn,
-  requireFields(["email", "password", "newPassword"]),
+  requireFields([
+    EMAIL_FIELD,
+    PASSWORD_FIELD,
+    NEW_PASSWORD_FIELD
+  ]),
   passport.authenticate('local-login'),
   controllers.changePassword
 )
 
-api.route("/forgotPassword").post(
-  requireFields(["email"]),
-  User.findUserFromRequest("email"),
+api.route( FORGOT_PASSWORD_ROUTE ).post(
+  requireFields([
+    EMAIL_FIELD
+  ]),
   controllers.forgotPassword
 )
 
-api.route("/resetPassword").post(
-  requireFields(["resetPasswordToken", "newPassword"]),
-  User.findUserFromRequest("resetPasswordToken", "+resetPasswordToken +resetPasswordExpires"),
+api.route( RESET_PASSWORD_ROUTE ).post(
+  requireFields([
+    RESET_PASSWORD_TOKEN_FIELD,
+    NEW_PASSWORD_FIELD
+  ]),
   controllers.resetPassword
 )
 
-module.exports = api;*/
+module.exports = api;
