@@ -1,10 +1,11 @@
 var LocalStrategy = require("passport-local").Strategy
-var crypto = require("crypto")
+var passport = require("passport")
 
-var config = require('./config.js')
-require("./constants.js")
+var config = require('../config.js')
+var encrypt = require("../helpers/encryption.js")
+require("../constants.js")
 
-module.exports = function(passport) {
+module.exports = function() {
   //Serialize and Deserialize
   passport.serializeUser((user, done) => {
     done(null, user.id)
@@ -34,13 +35,14 @@ module.exports = function(passport) {
         if (user)
           return done(null, false, {message: EMAIL_FIELD + " in use"})
 
-        var token = crypto.randomBytes(16).toString('hex')
-        var hash  = bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
-        userData = {}
+        //
+        var token = encrypt.genToken(16)
+        var hash  = encrypt.hashPassword(password)
+        var userData = {}
         userData.email = email
         userData.password = hash
         userData.confirmEmailToken = token
-        var user = await config.database.newUser(userData)
+        user = await config.database.newUser(userData)
 
         //make password undefined just to be safe
         //make sure confirmEmailToken is present in case it has select: false
@@ -68,7 +70,7 @@ module.exports = function(passport) {
         var user = await config.database.getUser({EMAIL_FIELD: email}, [PASSWORD_FIELD])
         if (!user)
           return done(null, false, {message : "no user found"})
-        if (!bcrypt.compareSync(password, user[PASSWORD_FIELD]))
+        if (!encrypt.matchPassword(password, user[PASSWORD_FIELD]))
           return done(null, false, {message : "invalid password"})
 
         //make password undefined just to be safe

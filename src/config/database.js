@@ -1,6 +1,12 @@
-var userModelErrorMessage = "express-login -- no database access provided. Provide a userModel (mongoose.Schema) or override getUser and saveUser"
+var userModelErrorMessage = "express-login -- no database access provided. Provide a userModel (mongoose.Schema) or custom database module"
 
 module.exports = {
+  init(options) {
+    if (!options.userModel)
+      throw new Error(userModelErrorMessage)
+    userModel = options.userModel
+  },
+
   userModel: undefined,
   async getUser(selection, projection = []) {
     if ( !this.userModel )

@@ -8,27 +8,19 @@ var requireFields = require("./middleware/requireFields.js")
 var handleErrors = require("./middleware/handleErrors.js")
 
 //modules
-var controllers = require("./controllers.js")
-require("./constants.js")
+var controllers = require("./routeControllers.js")
+var configurePassport = require("./configurePassport")
+require("../constants.js")
 
-//router
-var api = express.Router()
-api.use(handleErrors)
+//router setup
+var auth = express.Router()
+auth.use(passport.initialize())
+auth.use(passport.session())
+auth.use(handleErrors)
+configurePassport()
 
-api.route( LOGIN_ROUTE ).post(
-  requireFields([
-    EMAIL_FIELD,
-    PASSWORD_FIELD
-  ]),
-  passport.authenticate(PASSPORT_LOCAL_LOGIN),
-  controllers.login
-)
-
-api.route( LOGOUT_ROUTE ).post(
-  controllers.logout
-)
-
-api.route( SIGNUP_ROUTE ).post(
+//router routes
+auth.route( SIGNUP_ROUTE ).post(
   requireFields([
     EMAIL_FIELD,
     PASSWORD_FIELD
@@ -37,37 +29,50 @@ api.route( SIGNUP_ROUTE ).post(
   controllers.signup
 )
 
-api.route( RESEND_CONFIRMATION_ROUTE ).post(
+auth.route( LOGIN_ROUTE ).post(
+  requireFields([
+    EMAIL_FIELD,
+    PASSWORD_FIELD
+  ]),
+  passport.authenticate(PASSPORT_LOCAL_LOGIN),
+  controllers.login
+)
+
+auth.route( LOGOUT_ROUTE ).post(
+  controllers.logout
+)
+
+auth.route( RESEND_CONFIRMATION_ROUTE ).post(
   requireLoggedIn,
   controllers.resendConfirmation
 )
 
-api.route( CONFIRM_EMAIL_ROUTE ).post(
+auth.route( CONFIRM_EMAIL_ROUTE ).post(
   requireFields([
     CONFIRM_EMAIL_TOKEN_FIELD
   ]),
   controllers.confirmEmail
 )
 
-api.route( CHANGE_PASSWORD_ROUTE ).post(
+auth.route( CHANGE_PASSWORD_ROUTE ).post(
   requireLoggedIn,
   requireFields([
     EMAIL_FIELD,
     PASSWORD_FIELD,
     NEW_PASSWORD_FIELD
   ]),
-  passport.authenticate('local-login'),
+  passport.authenticate(PASSPORT_LOCAL_LOGIN),
   controllers.changePassword
 )
 
-api.route( FORGOT_PASSWORD_ROUTE ).post(
+auth.route( FORGOT_PASSWORD_ROUTE ).post(
   requireFields([
     EMAIL_FIELD
   ]),
   controllers.forgotPassword
 )
 
-api.route( RESET_PASSWORD_ROUTE ).post(
+auth.route( RESET_PASSWORD_ROUTE ).post(
   requireFields([
     RESET_PASSWORD_TOKEN_FIELD,
     NEW_PASSWORD_FIELD
@@ -75,4 +80,4 @@ api.route( RESET_PASSWORD_ROUTE ).post(
   controllers.resetPassword
 )
 
-module.exports = api;
+module.exports = auth;

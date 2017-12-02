@@ -20,11 +20,6 @@ if (process.env.NODE_ENV == 'test') {
 
   describe('route testing', () => {
 
-
-    //it('should return user on /signup POST', tests.signup)
-    //it('should return user on /login  POST', tests.login)
-    //it('should return 200  on /logout POST', tests.logout)
-    //it('')
   })
 
 }*/

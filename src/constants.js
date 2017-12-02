@@ -22,3 +22,14 @@ export const RESET_PASSWORD_EXPIRES_FIELD = "resetPasswordExpires"
 //Passport Strategies
 export const PASSPORT_LOCAL_LOGIN  = "local-login"
 export const PASSPORT_LOCAL_SIGNUP = "local-signup"
+
+//Email Templates
+export const EMAIL_CONFIRM_EMAIL = "emailConfirm"
+export const EMAIL_CONFIRM_THANK_YOU_EMAIL = "emailConfirmThankYou"
+export const FORGOT_PASSWORD_EMAIL = "forgotPassword"
+export const PASSWORD_CHANGED_EMAIL = "passwordChanged"
+
+//Encryption
+export const CONFIRM_TOKEN_BITS = 16
+export const RESET_PASS_TOKEN_BITS = 32
+export const RESET_PASS_TOKEN_DUR = 360000

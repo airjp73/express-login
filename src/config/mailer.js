@@ -1,7 +1,15 @@
-var noEmailErrorMessage = "WARNING: express-login -- Emails not set up. Please provide email-templates object or set noEmail to true to silence this warning."
+var noEmailErrorMessage = "WARNING: express-login -- Emails not set up. Please provide email (email-templates object) or set noEmail to true to silence this warning."
 
 module.exports = {
-  email: {},
+  init(options) {
+    this.email     = options.email
+    if (options.noEmail)
+      this.noEmail   = options.noEmail
+    if (options.logEmails)
+      this.logEmails = options.logEmails
+  },
+
+  email: undefined,
   noEmail: false,
   logEmails: true,
   async sendEmail(template, target, vars) {
