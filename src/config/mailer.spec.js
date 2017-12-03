@@ -42,4 +42,19 @@ describe('sendEmail', () => {
     var info = await mailer.sendEmail()
     expect(info).to.be.undefined
   })
+
+  describe('init', () => {
+    it("should set variables to variables provided in options", () => {
+      var options = {
+        email: {test:"test"},
+        noEmail: true,
+        logEmails: false
+      }
+      mailer.init(options)
+
+      expect(mailer.email).to.equal(options.email)
+      expect(mailer.noEmail).to.equal(options.noEmail)
+      expect(mailer.logEmails).to.equal(options.logEmails)
+    })
+  })
 })

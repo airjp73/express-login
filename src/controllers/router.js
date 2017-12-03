@@ -10,7 +10,7 @@ var handleErrors = require("./middleware/handleErrors.js")
 //modules
 var controllers = require("./routeControllers.js")
 var configurePassport = require("./configurePassport")
-require("../constants.js")
+var con = require("../constants")
 
 //router setup
 var auth = express.Router()
@@ -20,62 +20,62 @@ auth.use(handleErrors)
 configurePassport()
 
 //router routes
-auth.route( SIGNUP_ROUTE ).post(
+auth.route( con.routes.SIGNUP ).post(
   requireFields([
-    EMAIL_FIELD,
-    PASSWORD_FIELD
+    con.fields.EMAIL,
+    con.fields.PASSWORD
   ]),
-  passport.authenticate(PASSPORT_LOCAL_SIGNUP),
+  passport.authenticate(con.passport.LOCAL_SIGNUP),
   controllers.signup
 )
 
-auth.route( LOGIN_ROUTE ).post(
+auth.route( con.routes.LOGIN ).post(
   requireFields([
-    EMAIL_FIELD,
-    PASSWORD_FIELD
+    con.fields.EMAIL,
+    con.fields.PASSWORD
   ]),
-  passport.authenticate(PASSPORT_LOCAL_LOGIN),
+  passport.authenticate(con.passport.LOCAL_LOGIN),
   controllers.login
 )
 
-auth.route( LOGOUT_ROUTE ).post(
+auth.route( con.routes.LOGOUT ).post(
   controllers.logout
 )
 
-auth.route( RESEND_CONFIRMATION_ROUTE ).post(
+auth.route( con.routes.RESEND_CONFIRMATION ).post(
   requireLoggedIn,
   controllers.resendConfirmation
 )
 
-auth.route( CONFIRM_EMAIL_ROUTE ).post(
+auth.route( con.routes.CONFIRM_EMAIL ).post(
   requireFields([
-    CONFIRM_EMAIL_TOKEN_FIELD
+    con.fields.CONFIRM_EMAIL_TOKEN
   ]),
   controllers.confirmEmail
 )
 
-auth.route( CHANGE_PASSWORD_ROUTE ).post(
+auth.route( con.routes.CHANGE_PASSWORD ).post(
   requireLoggedIn,
   requireFields([
-    EMAIL_FIELD,
-    PASSWORD_FIELD,
-    NEW_PASSWORD_FIELD
+    con.fields.EMAIL,
+    con.fields.PASSWORD,
+    con.fields.NEW_PASSWORD
   ]),
-  passport.authenticate(PASSPORT_LOCAL_LOGIN),
+  passport.authenticate(con.passport.LOCAL_LOGIN),
   controllers.changePassword
 )
 
-auth.route( FORGOT_PASSWORD_ROUTE ).post(
+auth.route( con.routes.FORGOT_PASSWORD ).post(
   requireFields([
-    EMAIL_FIELD
+    con.fields.EMAIL
   ]),
   controllers.forgotPassword
 )
 
-auth.route( RESET_PASSWORD_ROUTE ).post(
+auth.route( con.routes.RESET_PASSWORD ).post(
   requireFields([
-    RESET_PASSWORD_TOKEN_FIELD,
-    NEW_PASSWORD_FIELD
+    con.fields.RESET_PASSWORD_TOKEN,
+    con.fields.NEW_PASSWORD
   ]),
   controllers.resetPassword
 )

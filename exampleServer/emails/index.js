@@ -20,23 +20,4 @@ var email = new Email({
   transport: transporter
 })
 
-async function sendEmail(template, target, vars) {
-  var info = await email.send({
-    template: "emails/" + template,
-    message: {
-      to: target
-    },
-    locals: vars
-  })
-  console.log("Message sent: %s", info.messageId)
-
-  return info
-}
-
-var mailer = {
-  transporter,
-  email,
-  sendEmail
-}
-
-module.exports = mailer
+module.exports = email

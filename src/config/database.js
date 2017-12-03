@@ -4,7 +4,7 @@ module.exports = {
   init(options) {
     if (!options.userModel)
       throw new Error(userModelErrorMessage)
-    userModel = options.userModel
+    this.userModel = options.userModel
   },
 
   userModel: undefined,
@@ -16,6 +16,7 @@ module.exports = {
     var user = await this.userModel.findOne(selection, projectionString)
     return user
   },
+
   async newUser(userData) {
     if ( !this.userModel )
       throw new Error(userModelErrorMessage)
@@ -24,6 +25,7 @@ module.exports = {
     Object.assign(user, userData)
     return await user.save()
   },
+
   async updateUser(user) {
     if ( !this.userModel )
       throw new Error(userModelErrorMessage)

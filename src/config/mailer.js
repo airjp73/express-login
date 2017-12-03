@@ -3,9 +3,9 @@ var noEmailErrorMessage = "WARNING: express-login -- Emails not set up. Please p
 module.exports = {
   init(options) {
     this.email     = options.email
-    if (options.noEmail)
+    if (options.noEmail != undefined)
       this.noEmail   = options.noEmail
-    if (options.logEmails)
+    if (options.logEmails != undefined)
       this.logEmails = options.logEmails
   },
 

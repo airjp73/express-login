@@ -1,9 +1,9 @@
 var LocalStrategy = require("passport-local").Strategy
 var passport = require("passport")
 
-var config = require('../config.js')
+var config = require('../config')
 var encrypt = require("../helpers/encryption.js")
-require("../constants.js")
+var con = require("../constants")
 
 module.exports = function() {
   //Serialize and Deserialize
@@ -22,9 +22,9 @@ module.exports = function() {
   })
 
   //Local Signup
-  passport.use(PASSPORT_LOCAL_SIGNUP,  new LocalStrategy({
-      usernameField : EMAIL_FIELD,
-      passwordField : PASSWORD_FIELD,
+  passport.use(con.passport.LOCAL_SIGNUP,  new LocalStrategy({
+      usernameField : con.fields.EMAIL,
+      passwordField : con.fields.PASSWORD,
       passReqToCallback : true
     },
     async (req, email, password, done) => {
@@ -33,7 +33,7 @@ module.exports = function() {
         //check for existing user
         var user = await config.database.getUser({email: email})
         if (user)
-          return done(null, false, {message: EMAIL_FIELD + " in use"})
+          return done(null, false, {message: con.fields.EMAIL + " in use"})
 
         //
         var token = encrypt.genToken(16)
@@ -59,22 +59,22 @@ module.exports = function() {
   ))
 
   //Local Login
-  passport.use(PASSPORT_LOCAL_LOGIN, new LocalStrategy ({
-      usernameField : EMAIL_FIELD,
-      passwordField : PASSWORD_FIELD,
+  passport.use(con.passport.LOCAL_LOGIN, new LocalStrategy ({
+      usernameField : con.fields.EMAIL,
+      passwordField : con.fields.PASSWORD,
       passReqToCallback : true
     },
     async (req, email, password, done) => {
       try {
 
-        var user = await config.database.getUser({EMAIL_FIELD: email}, [PASSWORD_FIELD])
+        var user = await config.database.getUser({[con.fields.EMAIL]: email}, [con.fields.PASSWORD])
         if (!user)
           return done(null, false, {message : "no user found"})
-        if (!encrypt.matchPassword(password, user[PASSWORD_FIELD]))
+        if (!encrypt.matchPassword(password, user[con.fields.PASSWORD]))
           return done(null, false, {message : "invalid password"})
 
         //make password undefined just to be safe
-        user[PASSWORD_FIELD] = undefined
+        user[con.fields.PASSWORD] = undefined
         return done(null, user)
 
       }

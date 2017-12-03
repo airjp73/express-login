@@ -16,6 +16,22 @@ describe('database module', () => {
     database.userModel = realUserModel
   })
 
+  describe('init', () => {
+    it('should assign userModel to model provided in options', () => {
+      var options = {
+        userModel: {test: "test"}
+      }
+      database.init(options)
+
+      expect(database.userModel).to.equal(options.userModel)
+    })
+
+    it('should throw error if no userModel provided', () => {
+      var options = {}
+      expect(database.init, options).to.throw
+    })
+  })
+
   describe('getUser', () => {
     it('getUser should call userModel.findOne return user', async () => {
       var returnUser = {hello: "hi"}

@@ -1,5 +1,5 @@
 var crypto = require("crypto")
-var bcrypt = require("bcrypt")
+var bcrypt = require("bcrypt-nodejs")
 
 module.exports = {
   genToken(bits) {
