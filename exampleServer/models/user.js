@@ -6,10 +6,8 @@ var userSchema = new mongoose.Schema({
   resetPasswordToken: {type: String, select: false},
   resetPasswordExpires: {type: Date, select: false},
 
-  email: String,
-  emailConfirmed: {type: Boolean, default: false},
-  profileName: String,
-  todos: []
+  email: {type: String, select: false},
+  emailConfirmed: {type: Boolean, default: false}
 })
 
 module.exports = mongoose.model("User", userSchema)

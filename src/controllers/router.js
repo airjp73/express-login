@@ -5,7 +5,6 @@ var passport = require("passport")
 //middleware
 var requireLoggedIn = require("./middleware/requireLoggedIn.js")
 var requireFields = require("./middleware/requireFields.js")
-var handleErrors = require("./middleware/handleErrors.js")
 
 //modules
 var controllers = require("./routeControllers.js")
@@ -16,7 +15,6 @@ var con = require("../constants")
 var auth = express.Router()
 auth.use(passport.initialize())
 auth.use(passport.session())
-auth.use(handleErrors)
 configurePassport()
 
 //router routes
@@ -39,6 +37,7 @@ auth.route( con.routes.LOGIN ).post(
 )
 
 auth.route( con.routes.LOGOUT ).post(
+  requireLoggedIn,
   controllers.logout
 )
 
@@ -55,7 +54,6 @@ auth.route( con.routes.CONFIRM_EMAIL ).post(
 )
 
 auth.route( con.routes.CHANGE_PASSWORD ).post(
-  requireLoggedIn,
   requireFields([
     con.fields.EMAIL,
     con.fields.PASSWORD,

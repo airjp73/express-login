@@ -13,8 +13,7 @@ module.exports = {
       throw new Error(userModelErrorMessage)
 
     var projectionString = projection.join(" ")
-    var user = await this.userModel.findOne(selection, projectionString)
-    return user
+    return await this.userModel.findOne(selection, projectionString)
   },
 
   async newUser(userData) {
@@ -30,6 +29,6 @@ module.exports = {
     if ( !this.userModel )
       throw new Error(userModelErrorMessage)
 
-    user.save()
+    return await user.save()
   }
 }

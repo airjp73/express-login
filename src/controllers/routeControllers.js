@@ -5,7 +5,7 @@ var con = require('../constants')
 module.exports = {
   ////login
   login(req, res) {
-    return res.sendStatus(200)
+    res.sendStatus(200)
   },
 
   ////signup
@@ -21,16 +21,28 @@ module.exports = {
 
 
   ////resendConfirmation
-  resendConfirmation(req, res, next) {
-    if (req.user.emailConfirmed)
-      return res.status(403).json({message:"Email already confirmed"})
+  async resendConfirmation(req, res, next) {
+    var selection = {_id: req.user._id}
+    var fields = [
+      con.fields.EMAIL,
+      con.fields.EMAIL_CONFIRMED,
+      con.fields.CONFIRM_EMAIL_TOKEN
+    ]
 
-    config.mailer.sendEmail(con.emails.EMAIL_CONFIRM, req.user.email, {
-        link: "http://" + req.headers.host + "/" + con.routes.CONFIRM_EMAIL + "/" + req.user.confirmEmailToken,
-      })
-      .catch(next)
+    try {
+      var user = await config.database.getUser(selection, fields)
+      if (user.emailConfirmed)
+        return res.status(403).json({message:"Email already confirmed"})
+      res.sendStatus(202)
 
-    res.sendStatus(202)
+      await config.mailer.sendEmail(con.emails.EMAIL_CONFIRM, user.email, {
+          link: "http://" + req.headers.host + "/" + con.routes.CONFIRM_EMAIL + "/" + user.confirmEmailToken,
+        })
+    }
+    catch (err) {
+      console.log(err)
+      next(err)
+    }
   },
 
 
@@ -39,16 +51,29 @@ module.exports = {
   async confirmEmail(req, res, next) {
     try {
 
-      req.user.emailConfirmed = true
-      req.user.confirmEmailToken = undefined
-      req.user = await req.user.save()
+      var selection = {
+        confirmEmailToken: req.body.confirmEmailToken
+      }
+      var fields = [
+        con.fields.EMAIL_CONFIRMED,
+        con.fields.CONFIRM_EMAIL_TOKEN
+      ]
+
+      var user = await config.database.getUser(selection, fields)
+      if (!user)
+        return res.status(404).json({message:"No user found with that token"})
+
+      user.emailConfirmed = true
+      user.confirmEmailToken = undefined
+      user = await config.database.updateUser(user)
 
       res.sendStatus(200)
 
-      config.mailer.sendEmail(con.emails.EMAIL_CONFIRM_THANK_YOU, req.user.email, {})
+      config.mailer.sendEmail(con.emails.EMAIL_CONFIRM_THANK_YOU, user.email, {})
 
     }
     catch(err) {
+      console.log(err)
       next(err)
     }
   },
@@ -56,9 +81,9 @@ module.exports = {
 
 
   ////logout
-  logout(req, res, next) {
+  logout(req, res) {
     req.logout()
-    return res.status(200)
+    res.sendStatus(200)
   },
 
 
@@ -66,19 +91,22 @@ module.exports = {
   ////changePassword
   async changePassword(req, res, next) {
     try {
-      var newPassword = req.body[con.fields.NEW_PASSWORD]
-      var user = await config.database.getUser({_id: req.user.id}, [con.fields.PASSWORD])
-      if (!encrypt.matchPassword(user.password, newPassword))
-        return res.sendStatus(401)
+      var password = req.body.password
+      var newPassword = req.body.newPassword
+      var user = await config.database.getUser({_id: req.user.id}, [con.fields.EMAIL, con.fields.PASSWORD])
+      var hash = user.password
 
+      if (!encrypt.matchPassword(password, hash))
+        return res.sendStatus(401)
       user.password = encrypt.hashPassword(newPassword)
       await config.database.updateUser(user)
 
       res.sendStatus(200)
-      config.mailer.sendEmail("passwordChanged", req.user.email, {})
+      config.mailer.sendEmail("passwordChanged", user.email, {})
 
     }
     catch(err) {
+      console.log(err)
       next(err)
     }
   },

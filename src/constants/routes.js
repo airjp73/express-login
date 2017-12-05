@@ -1,6 +1,6 @@
 module.exports = {
   LOGIN               : "/login",
-  LOGOUT              : "logout",
+  LOGOUT              : "/logout",
   SIGNUP              : "/signup",
   RESEND_CONFIRMATION : "/resendConfirmation",
   CONFIRM_EMAIL       : "/confirmEmail",

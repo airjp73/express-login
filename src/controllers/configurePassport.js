@@ -13,8 +13,8 @@ module.exports = function() {
 
   passport.deserializeUser(async (id, done) => {
     try {
-      var user = await config.database.getUser({_id: id})
-      done(null, user)
+      //var user = await config.database.getUser({_id: id}, ["email"])
+      done(null, {_id: id})
     }
     catch(err) {
       done(err)
@@ -68,6 +68,7 @@ module.exports = function() {
       try {
 
         var user = await config.database.getUser({[con.fields.EMAIL]: email}, [con.fields.PASSWORD])
+
         if (!user)
           return done(null, false, {message : "no user found"})
         if (!encrypt.matchPassword(password, user[con.fields.PASSWORD]))
@@ -79,6 +80,7 @@ module.exports = function() {
 
       }
       catch(err) {
+        console.log(err)
         done(err)
       }
     }

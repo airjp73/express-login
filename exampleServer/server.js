@@ -6,9 +6,10 @@ var mongoose      = require('mongoose')
 var session       = require('express-session')
 var bodyParser    = require('body-parser')
 var cookieParser  = require('cookie-parser')
+var http          = require('http')
 
 //Environment Variables
-require('env2')('secrets.env')
+require('env2')(__dirname + "/.env")
 
 //User Model and email-templates object
 var User = require('./models/user.js')
@@ -36,10 +37,13 @@ app.use(session({
     Connect to DB
 */
 mongoose.Promise = global.Promise
-mongoose.connect(process.env.DB_URL).then(
-  () => {console.log("Database is connected")},
-  err => {console.log("Can not connect to the database" + err)}
-)
+mongoose.connect(process.env.DB_URL)
+  .then(() => {
+    console.log("Database is connected")
+  })
+  .catch((err) => {
+    console.log("Can not connect to the database" + err)
+  })
 
 //api routes
 var authOptions = {
@@ -55,6 +59,7 @@ app.use("/auth", expressLogin)
   Start listening
 */
 var port = process.env.PORT || 3000
+//module.exports = app
 module.exports = app.listen(port, function() {
   console.log("Listening on port " + port)
 })

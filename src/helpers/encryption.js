@@ -10,7 +10,7 @@ module.exports = {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
   },
 
-  matchPassword(passwordHash, candidatePass) {
-    return bcrypt.compareSync(password, candidatePass)
+  matchPassword(candidatePass, passwordHash) {
+    return bcrypt.compareSync(candidatePass, passwordHash)
   }
 }
