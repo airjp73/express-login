@@ -49,9 +49,13 @@ const COOKIE = "connect.sid"
 if (process.env.NODE_ENV == 'test') {
 
   describe('route testing', () => {
-    beforeEach(() => {
+    before(() => {
+
+    })
+    beforeEach(async () => {
+      await User.collection.remove({email: TEST_USER.email})
       server = chai.request.agent(app)
-      User.collection.remove({})
+
     })
 
     ////////////////////////////////////////////////////////////////////////////
@@ -157,7 +161,7 @@ if (process.env.NODE_ENV == 'test') {
         await server.post("/auth/login").send(fields)
         await server.post("/auth/resendConfirmation")
 
-        sinon.assert.called(mail)
+        sinon.assert.calledOnce(mail)
         expect(mail.args[0][2].link).to.equal(url)
 
         mail.restore()
@@ -183,73 +187,172 @@ if (process.env.NODE_ENV == 'test') {
         expect(res).to.have.status(401)
       })
     })
-  })
 
-  ////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////ConfirmEmail
-  ////////////////////////////////////////////////////////////////////////////
-  describe("confirmEmail", () => {
-    it("should set emailConfirmed to true and delete token", async () => {
-      await mockUser()
-      var fields = {
-        confirmEmailToken: TEST_USER.confirmEmailToken
-      }
 
-      await server.post("/auth/confirmEmail").send(fields)
+    ////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////ConfirmEmail
+    ////////////////////////////////////////////////////////////////////////////
+    describe("confirmEmail", () => {
+      it("should set emailConfirmed to true and delete token", async () => {
+        await mockUser()
+        var fields = {
+          confirmEmailToken: TEST_USER.confirmEmailToken
+        }
 
-      var user = await User.findOne({email: TEST_USER.email}, "emailConfirmed confirmEmailToken")
-      expect(user.emailConfirmed).to.be.true
-      expect(user.confirmEmailToken).to.be.undefined
+        await server.post("/auth/confirmEmail").send(fields)
+
+        var user = await User.findOne({email: TEST_USER.email}, "emailConfirmed confirmEmailToken")
+        expect(user.emailConfirmed).to.be.true
+        expect(user.confirmEmailToken).to.be.undefined
+      })
+
+      it("should return 404 if confirmEmailToken has no match", async () => {
+        var fields = {
+          confirmEmailToken: "asdfasdf"
+        }
+
+        var res = await server.post("/auth/confirmEmail").send(fields)
+        expect(res).to.have.status(404)
+      })
     })
 
-    it("should return 404 if confirmEmailToken has no match", async () => {
-      var fields = {
-        confirmEmailToken: "asdfasdf"
-      }
+    ////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////ChangePassword
+    ////////////////////////////////////////////////////////////////////////////
+    describe("changePassword", () => {
+      it("should change users password", async () => {
+        await mockUser()
+        var fields = {
+          email: TEST_USER.email,
+          password: TEST_USER.password,
+          newPassword: TEST_USER.newPassword
+        }
 
-      var res = await server.post("/auth/confirmEmail").send(fields)
-      expect(res).to.have.status(404)
+        await server.post("/auth/changePassword").send(fields)
+
+        var user = await config.database.getUser({email:TEST_USER.email}, [con.fields.EMAIL, con.fields.PASSWORD])
+        var passChanged = encrypt.matchPassword(TEST_USER.newPassword, user.password)
+        expect(passChanged).to.be.true
+      })
+
+      it("should return 401 on invalid user info", async () => {
+        var fields = {
+          email: TEST_USER.email,
+          password: "noMatch",
+          newPassword: TEST_USER.newPassword
+        }
+
+        var res = await server.post("/auth/changePassword").send(fields)
+        expect(res).to.have.status(401)
+      })
+
+      it("should return 400 on incomplete info", async () => {
+        var fields = {
+          email: TEST_USER.email,
+          newPassword: TEST_USER.newPassword
+        }
+
+        var res = await server.post("/auth/changePassword").send(fields)
+        expect(res).to.have.status(400)
+      })
     })
-  })
 
-  ////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////ChangePassword
-  ////////////////////////////////////////////////////////////////////////////
-  describe("changePassword", () => {
-    it("should change users password", async () => {
-      await mockUser()
-      var fields = {
-        email: TEST_USER.email,
-        password: TEST_USER.password,
-        newPassword: TEST_USER.newPassword
-      }
+    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////forgotPassword
+    ////////////////////////////////////////////////////////////////////////////
+    describe("forgotPassword", () => {
+      it("should set resetPasswordToken and resetPasswordTokenExpires and send email with link", async () => {
+        await mockUser()
+        var mail = sinon.stub(config.mailer, "sendEmail")
+        var fields = {
+          email: TEST_USER.email
+        }
 
-      await server.post("/auth/changePassword").send(fields)
+        var res = await server.post("/auth/forgotPassword").send(fields)
+        expect(res).to.have.status(200)
 
-      var user = await config.database.getUser({email:TEST_USER.email}, [con.fields.EMAIL, con.fields.PASSWORD])
-      var passChanged = encrypt.matchPassword(TEST_USER.newPassword, user.password)
-      expect(passChanged).to.be.true
+        var user = await config.database.getUser({email:TEST_USER.email}, [con.fields.RESET_PASSWORD_TOKEN, con.fields.RESET_PASSWORD_EXPIRES])
+        expect(user.resetPasswordToken).to.exist
+        expect(user.resetPasswordExpires).to.exist
+
+        var url = "http://127.0.0.1:" + process.env.PORT +"/" + con.routes.RESET_PASSWORD + "/" + user.resetPasswordToken
+        sinon.assert.calledOnce(mail)
+        expect(mail.args[0][2].link).to.equal(url)
+        mail.restore()
+      })
+
+      it("should return 404 if no user with that email", async () => {
+        var fields = {
+          email: "nomatch@nomatch.com"
+        }
+
+        var res = await server.post("/auth/forgotPassword").send(fields)
+        expect(res).to.have.status(404)
+      })
     })
 
-    it("should return 401 on invalid user info", async () => {
-      var fields = {
-        email: TEST_USER.email,
-        password: "noMatch",
-        newPassword: TEST_USER.newPassword
-      }
+    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////resetPassword
+    ////////////////////////////////////////////////////////////////////////////
+    describe("resetPassword", () => {
+      it("should change password to newPassword field and send an email", async () => {
+        var mail = sinon.stub(config.mailer, "sendEmail")
+        var token = "testToken"
 
-      var res = await server.post("/auth/changePassword").send(fields)
-      expect(res).to.have.status(401)
+        var user = await mockUser()
+        user.resetPasswordToken = token
+        user.resetPasswordExpires = Date.now() + 360000
+        await user.save()
+
+        var fields = {
+          resetPasswordToken: token,
+          newPassword: TEST_USER.newPassword
+        }
+        var res = await server.post("/auth/resetPassword").send(fields)
+        expect(res).to.have.status(200)
+
+        user = await config.database.getUser({_id: user.id}, [con.fields.PASSWORD])
+        expect(encrypt.matchPassword(TEST_USER.newPassword, user.password)).to.be.true
+        sinon.assert.calledOnce(mail)
+        mail.restore()
+      })
+
+      it("should return 403 if token expired", async () => {
+        var mail = sinon.stub(config.mailer, "sendEmail")
+        var token = "testToken"
+
+        var user = await mockUser()
+        user.resetPasswordToken = token
+        user.resetPasswordExpires = Date.now() - 1
+        await user.save()
+
+        var fields = {
+          resetPasswordToken: token,
+          newPassword: TEST_USER.newPassword
+        }
+        var res = await server.post("/auth/resetPassword").send(fields)
+        expect(res).to.have.status(403)
+
+        user = await config.database.getUser({_id: user.id}, [con.fields.PASSWORD])
+        expect(encrypt.matchPassword(TEST_USER.password, user.password)).to.be.true
+        sinon.assert.notCalled(mail)
+        mail.restore()
+
+      })
+
+      it("should return 404 if no matching user", async () => {
+        var mail = sinon.stub(config.mailer, "sendEmail")
+        var fields = {
+          resetPasswordToken: "nomatch",
+          newPassword: TEST_USER.newPassword
+        }
+
+        var res = await server.post("/auth/resetPassword").send(fields)
+        expect(res).to.have.status(404)
+        sinon.assert.notCalled(mail)
+        mail.restore()
+      })
     })
 
-    it("should return 400 on incomplete info", async () => {
-      var fields = {
-        email: TEST_USER.email,
-        newPassword: TEST_USER.newPassword
-      }
-
-      var res = await server.post("/auth/changePassword").send(fields)
-      expect(res).to.have.status(400)
-    })
-  })
+  })//end describe
 }

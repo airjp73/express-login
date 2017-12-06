@@ -116,19 +116,22 @@ module.exports = {
   ////forgotPassword
   async forgotPassword(req, res, next) {
     try {
-
-      req.user.resetPasswordToken = encrypt.genToken(con.encrypt.RESET_PASS_TOKEN_BITS)
-      req.user.resetPasswordExpires = con.encrypt.RESET_PASS_TOKEN_DUR
-      await config.database.updateUser(req.user)
+      var user = await config.database.getUser({email: req.body.email}, [con.fields.EMAIL])
+      if (!user)
+        return res.status(404).json({message: "no user with that email"})
+      user.resetPasswordToken = encrypt.genToken(con.encrypt.RESET_PASS_TOKEN_BITS)
+      user.resetPasswordExpires = con.encrypt.RESET_PASS_TOKEN_DUR
+      await config.database.updateUser(user)
 
       res.sendStatus(200)
 
-      config.mailer.sendEmail("forgotPassword", req.user.email, {
-          link: "http://" + req.headers.host + "/" + con.routes.RESET_PASSWORD + "/" + req.user.resetPasswordToken
+      config.mailer.sendEmail("forgotPassword", user.email, {
+          link: "http://" + req.headers.host + "/" + con.routes.RESET_PASSWORD + "/" + user.resetPasswordToken
         })
 
     }
     catch(err) {
+      console.log(err)
       next(err)
     }
   },
@@ -138,25 +141,27 @@ module.exports = {
   ////resetPassword
   async resetPassword(req, res, next) {
     try {
+      var user = await config.database.getUser({resetPasswordToken: req.body.resetPasswordToken}, [con.fields.EMAIL, con.fields.RESET_PASSWORD_EXPIRES])
 
-      if (Date.now() > req.user.resetPasswordExpires) {
+      if (!user)
+        return res.status(404).json({message: "no user with that resetPasswordToken"})
+
+      if (Date.now() > user.resetPasswordExpires) {
         res.status(403).json({message:"Reset password token expired"})
-        req.user.resetPasswordToken = undefined
-        req.user.resetPasswordExpires = undefined
-        await config.database.updateUser(req.user)
+        user.resetPasswordToken = undefined
+        user.resetPasswordExpires = undefined
+        await config.database.updateUser(user)
         return
       }
 
-
-      req.user.password = encrypt.hashPassword(req.body.newPassword)
-      req.user.resetPasswordToken = undefined
-      req.user.resetPasswordExpires = undefined
-      req.user = await config.database.updateUser(req.user)
+      user.password = encrypt.hashPassword(req.body.newPassword)
+      user.resetPasswordToken = undefined
+      user.resetPasswordExpires = undefined
+      user = await config.database.updateUser(user)
 
       res.sendStatus(200)
 
-      config.mailer.sendEmail("passwordChanged", req.user.email, {})
-
+      config.mailer.sendEmail("passwordChanged", user.email, {})
     }
     catch(err) {
       next(err)
