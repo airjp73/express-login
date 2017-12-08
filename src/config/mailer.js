@@ -1,10 +1,13 @@
 "use strict"
 
+var Email = require("email-templates")
+
 var noEmailErrorMessage = "WARNING: express-login -- Emails not set up. Please provide email (email-templates object) or set noEmail to true to silence this warning."
 
 module.exports = {
   init(options) {
-    this.email     = options.email
+    if (options.emailOptions != undefined)
+      this.email = new Email(options.emailOptions)
     if (options.noEmail != undefined)
       this.noEmail   = options.noEmail
     if (options.logEmails != undefined)

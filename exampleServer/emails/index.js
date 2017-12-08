@@ -11,14 +11,11 @@ var transporter = nodemailer.createTransport({
   }
 })
 
-var email = new Email({
-  views: {
-    root: path.resolve("emails/templates")
-  },
+var emailOptions = {
   message: {
     from: "AaronP <aaron@bob.com>"
   },
   transport: transporter
-})
+}
 
-module.exports = email
+module.exports = emailOptions

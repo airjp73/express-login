@@ -12,8 +12,8 @@ var http          = require('http')
 require('env2')(__dirname + "/.env")
 
 //User Model and email-templates object
-var User = require('./models/user.js')
-var Email = require('./emails/')
+var userModel = require('./models/user.js')
+var emailOptions = require('./emails')
 
 
 /*
@@ -47,8 +47,8 @@ mongoose.connect(process.env.DB_URL)
 
 //api routes
 var authOptions = {
-  userModel: User,
-  email: Email
+  userModel,
+  emailOptions
 }
 var expressLogin = require("../src")(authOptions)
 app.use("/auth", expressLogin)
