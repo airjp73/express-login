@@ -11,7 +11,7 @@ var http          = require('http')
 //Environment Variables
 require('env2')(__dirname + "/.env")
 
-//User Model and email-templates object
+//User model and email options
 var userModel = require('./models/user.js')
 var emailOptions = require('./emails')
 
