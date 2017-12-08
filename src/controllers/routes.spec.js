@@ -165,6 +165,8 @@ if (process.env.NODE_ENV == 'test') {
         await server.post("/auth/resendConfirmation")
 
         sinon.assert.calledOnce(mail)
+        expect(mail.args[0][0]).to.equal(con.emails.CONFIRM)
+        expect(mail.args[0][1]).to.equal(TEST_USER.email)
         expect(mail.args[0][2].link).to.equal(url)
       })
 
@@ -205,6 +207,10 @@ if (process.env.NODE_ENV == 'test') {
         var user = await User.findOne({email: TEST_USER.email}, "emailConfirmed confirmEmailToken")
         expect(user.emailConfirmed).to.be.true
         expect(user.confirmEmailToken).to.be.undefined
+
+        sinon.assert.calledOnce(mail)
+        expect(mail.args[0][0]).to.equal(con.emails.CONFIRM_THANK_YOU)
+        expect(mail.args[0][1]).to.equal(TEST_USER.email)
       })
 
       it("should return 404 if confirmEmailToken has no match", async () => {
@@ -214,6 +220,7 @@ if (process.env.NODE_ENV == 'test') {
 
         var res = await server.post("/auth/confirmEmail").send(fields)
         expect(res).to.have.status(404)
+        sinon.assert.notCalled(mail)
       })
     })
 
@@ -234,7 +241,10 @@ if (process.env.NODE_ENV == 'test') {
         var user = await config.database.getUser({email:TEST_USER.email}, [con.fields.EMAIL, con.fields.PASSWORD])
         var passChanged = encrypt.matchPassword(TEST_USER.newPassword, user.password)
         expect(passChanged).to.be.true
+
         sinon.assert.calledOnce(mail)
+        expect(mail.args[0][0]).to.equal(con.emails.PASSWORD_CHANGED)
+        expect(mail.args[0][1]).to.equal(TEST_USER.email)
       })
 
       it("should return 401 on invalid user info", async () => {
@@ -246,6 +256,7 @@ if (process.env.NODE_ENV == 'test') {
 
         var res = await server.post("/auth/changePassword").send(fields)
         expect(res).to.have.status(401)
+        sinon.assert.notCalled(mail)
       })
 
       it("should return 400 on incomplete info", async () => {
@@ -256,6 +267,7 @@ if (process.env.NODE_ENV == 'test') {
 
         var res = await server.post("/auth/changePassword").send(fields)
         expect(res).to.have.status(400)
+        sinon.assert.notCalled(mail)
       })
     })
 
@@ -278,6 +290,8 @@ if (process.env.NODE_ENV == 'test') {
 
         var url = "http://127.0.0.1:" + process.env.PORT + con.routes.RESET_PASSWORD + "?token=" + user.resetPasswordToken
         sinon.assert.calledOnce(mail)
+        expect(mail.args[0][0]).to.equal(con.emails.FORGOT_PASSWORD)
+        expect(mail.args[0][1]).to.equal(TEST_USER.email)
         expect(mail.args[0][2].link).to.equal(url)
       })
 
@@ -288,6 +302,7 @@ if (process.env.NODE_ENV == 'test') {
 
         var res = await server.post("/auth/forgotPassword").send(fields)
         expect(res).to.have.status(404)
+        sinon.assert.notCalled(mail)
       })
     })
 
@@ -313,6 +328,8 @@ if (process.env.NODE_ENV == 'test') {
         user = await config.database.getUser({_id: user.id}, [con.fields.PASSWORD])
         expect(encrypt.matchPassword(TEST_USER.newPassword, user.password)).to.be.true
         sinon.assert.calledOnce(mail)
+        expect(mail.args[0][0]).to.equal(con.emails.PASSWORD_CHANGED)
+        expect(mail.args[0][1]).to.equal(TEST_USER.email)
       })
 
       it("should return 403 if token expired", async () => {
@@ -333,7 +350,6 @@ if (process.env.NODE_ENV == 'test') {
         user = await config.database.getUser({_id: user.id}, [con.fields.PASSWORD])
         expect(encrypt.matchPassword(TEST_USER.password, user.password)).to.be.true
         sinon.assert.notCalled(mail)
-
       })
 
       it("should return 404 if no matching user", async () => {
