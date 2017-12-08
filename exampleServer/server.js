@@ -25,7 +25,7 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(session({
-  secret : process.env.SESSION_SECRET,
+  secret : process.env.AUTH_TEST_SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
   cookie: {
@@ -37,7 +37,7 @@ app.use(session({
     Connect to DB
 */
 mongoose.Promise = global.Promise
-mongoose.connect(process.env.DB_URL)
+mongoose.connect(process.env.AUTH_TEST_DB_URL)
   .then(() => {
     console.log("Database is connected")
   })
@@ -58,7 +58,7 @@ app.use("/auth", expressLogin)
 /*
   Start listening
 */
-var port = process.env.PORT || 3000
+var port = process.env.AUTH_TEST_PORT || 3000
 module.exports = app.listen(port, function() {
   console.log("Listening on port " + port)
 })

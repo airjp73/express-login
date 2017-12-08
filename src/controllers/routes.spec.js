@@ -1,53 +1,45 @@
 "use strict"
 
-var chai = require('chai')
-var chaiAsPromised = require('chai-as-promised')
-var chaiHttp = require('chai-http')
-chai.use(chaiAsPromised)
-chai.use(chaiHttp)
+//These tests should only go off when actually testing this module
+//I don't want to be inadvertantly responsible for blowing up someones database
+if (process.env.TEST_AUTH_ROUTES == true) {
 
-var expect = chai.expect
-var sinon = require('sinon')
-var mongoose = require('mongoose')
+  var chai = require('chai')
+  var chaiAsPromised = require('chai-as-promised')
+  var chaiHttp = require('chai-http')
+  chai.use(chaiAsPromised)
+  chai.use(chaiHttp)
 
-var config = require('../config')
-var con = require("../constants")
-var User   = require('../../exampleServer/models/user.js')
-var encrypt = require('../helpers/encryption.js')
-var app = require('../../exampleServer/server.js')
-var server = {}
+  var expect = chai.expect
+  var sinon = require('sinon')
+  var mongoose = require('mongoose')
 
-const TEST_USER = {
-  email: "mrTestUser@test.com",
-  profileName: "Mr. Test",
-  password: "myTestPass",
-  newPassword: "myNewTestPass",
-  confirmEmailToken: "testtest"
-}
+  var config = require('../config')
+  var con = require("../constants")
+  var User   = require('../../exampleServer/models/user.js')
+  var encrypt = require('../helpers/encryption.js')
+  var app = require('../../exampleServer/server.js')
+  var server = {}
 
-var mockUser = async () => {
-  var testUser = new User()
-  testUser.email = TEST_USER.email
-  testUser.password = encrypt.hashPassword(TEST_USER.password)
-  testUser.confirmEmailToken = TEST_USER.confirmEmailToken
-  testUser.emailConfirmed = false
-  return await testUser.save()
-}
+  const COOKIE = "connect.sid"
+  const TEST_USER = {
+    email: "mrTestUser@test.com",
+    profileName: "Mr. Test",
+    password: "myTestPass",
+    newPassword: "myNewTestPass",
+    confirmEmailToken: "testtest"
+  }
+  var mockUser = async () => {
+    var testUser = new User()
+    testUser.email = TEST_USER.email
+    testUser.password = encrypt.hashPassword(TEST_USER.password)
+    testUser.confirmEmailToken = TEST_USER.confirmEmailToken
+    testUser.emailConfirmed = false
+    return await testUser.save()
+  }
+  var mail = {}
 
-const COOKIE = "connect.sid"
-var mail = {}
 
-//Routes
-  //login
-  //logout
-  //signup
-  //resendConfirmation
-  //confirmEmail
-  //changePassword
-  //forgotPassword
-  //resetPassword
-
-if (process.env.NODE_ENV == 'test') {
 
   describe('route testing', () => {
     before(() => {
