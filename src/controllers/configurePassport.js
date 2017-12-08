@@ -8,19 +8,14 @@ var encrypt = require("../helpers/encryption.js")
 var con = require("../constants")
 
 module.exports = function() {
-  //Serialize and Deserialize
   passport.serializeUser((user, done) => {
     done(null, user.id)
   })
 
   passport.deserializeUser(async (id, done) => {
-    try {
-      //var user = await config.database.getUser({_id: id}, ["email"])
-      done(null, {_id: id})
-    }
-    catch(err) {
-      done(err)
-    }
+    //each route selects the specific fields that it needs
+    //so there's no need to query the database here
+    done(null, {_id: id})
   })
 
   //Local Signup
@@ -37,7 +32,7 @@ module.exports = function() {
         if (user)
           return done(null, false, {message: con.fields.EMAIL + " in use"})
 
-        //
+        //populate user data and save
         var token = encrypt.genToken(16)
         var hash  = encrypt.hashPassword(password)
         var userData = {}
@@ -82,7 +77,6 @@ module.exports = function() {
 
       }
       catch(err) {
-        console.log(err)
         done(err)
       }
     }
