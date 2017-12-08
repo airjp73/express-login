@@ -11,13 +11,18 @@ module.exports = {
   },
 
   ////signup
-  signup(req, res, next) {
+  async signup(req, res, next) {
     res.sendStatus(200)
 
-    config.mailer.sendEmail(con.emails.CONFIRM, req.user.email, {
-        link: "http://" + req.headers.host + con.routes.CONFIRM_EMAIL + "?token=" + req.user.confirmEmailToken,
-      })
-      .catch(next)
+    try {
+      config.mailer.sendEmail(con.emails.CONFIRM, req.user.email, {
+          link: "http://" + req.headers.host + con.routes.CONFIRM_EMAIL + "?token=" + req.user.confirmEmailToken,
+        })
+    }
+    catch(err) {
+      next(err)
+    }
+
   },
 
 

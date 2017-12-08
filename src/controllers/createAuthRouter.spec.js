@@ -29,7 +29,7 @@ describe("authRouter", () => {
   })
 
   it("should return 401 if not logged it", async () => {
-    var res = await server.get("/auth/test/testRoute")
+    var res = await server.get("/test/testRoute")
 
     expect(res).to.have.status(401)
   })
@@ -42,7 +42,7 @@ describe("authRouter", () => {
     }
 
     await server.post("/auth/login").send(fields)
-    var res = await server.get("/auth/test/testRoute")
+    var res = await server.get("/test/testRoute")
 
     expect(res).to.have.status(200)
   })
