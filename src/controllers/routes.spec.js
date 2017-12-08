@@ -2,7 +2,7 @@
 
 //These tests should only go off when actually testing this module
 //I don't want to be inadvertantly responsible for blowing up someones database
-if (process.env.TEST_AUTH_ROUTES == true) {
+if (process.env.TEST_AUTH_ROUTES) {
 
   var chai = require('chai')
   var chaiAsPromised = require('chai-as-promised')
@@ -151,7 +151,7 @@ if (process.env.TEST_AUTH_ROUTES == true) {
           email: TEST_USER.email,
           password: TEST_USER.password
         }
-        var url = "http://127.0.0.1:" + process.env.PORT + con.routes.CONFIRM_EMAIL + "?token=" + TEST_USER.confirmEmailToken
+        var url = "http://127.0.0.1:" + process.env.AUTH_TEST_PORT + con.routes.CONFIRM_EMAIL + "?token=" + TEST_USER.confirmEmailToken
 
         await server.post("/auth/login").send(fields)
         await server.post("/auth/resendConfirmation")
@@ -280,7 +280,7 @@ if (process.env.TEST_AUTH_ROUTES == true) {
         expect(user.resetPasswordToken).to.exist
         expect(user.resetPasswordExpires).to.exist
 
-        var url = "http://127.0.0.1:" + process.env.PORT + con.routes.RESET_PASSWORD + "?token=" + user.resetPasswordToken
+        var url = "http://127.0.0.1:" + process.env.AUTH_TEST_PORT + con.routes.RESET_PASSWORD + "?token=" + user.resetPasswordToken
         sinon.assert.calledOnce(mail)
         expect(mail.args[0][0]).to.equal(con.emails.FORGOT_PASSWORD)
         expect(mail.args[0][1]).to.equal(TEST_USER.email)
