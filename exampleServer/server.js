@@ -51,7 +51,7 @@ var authOptions = {
   emailOptions
 }
 var expressLogin = require("../src")(authOptions)
-app.use("/auth", expressLogin)
+app.use("/auth", expressLogin.router)
 
 
 

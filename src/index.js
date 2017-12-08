@@ -2,9 +2,14 @@
 
 var config = require('./config')
 var router = require('./controllers/router.js')
+var createAuthRouter = require('./controllers/createAuthRouter.js')
 
 module.exports = (options) => {
   config.init(options)
 
-  return router
+  return {
+    config,
+    router,
+    createAuthRouter
+  }
 }
