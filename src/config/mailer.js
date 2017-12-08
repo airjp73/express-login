@@ -1,3 +1,5 @@
+"use strict"
+
 var noEmailErrorMessage = "WARNING: express-login -- Emails not set up. Please provide email (email-templates object) or set noEmail to true to silence this warning."
 
 module.exports = {

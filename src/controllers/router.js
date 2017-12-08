@@ -1,3 +1,5 @@
+"use strict"
+
 //3rd party
 var express = require("express")
 var passport = require("passport")

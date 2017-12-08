@@ -1,3 +1,5 @@
+"use strict"
+
 module.exports = function(fields) {
   if (fields.length == 0)
     throw Error("requireFields must not be called if no fields are required")

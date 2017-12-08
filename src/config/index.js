@@ -1,3 +1,5 @@
+"use strict"
+
 //Config object that contains the database and mailer modules
 //This is mutable by providing an options object
 

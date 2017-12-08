@@ -1,3 +1,5 @@
+"use strict"
+
 var userModelErrorMessage = "express-login -- no database access provided. Provide a userModel (mongoose.Schema) or custom database module"
 
 module.exports = {

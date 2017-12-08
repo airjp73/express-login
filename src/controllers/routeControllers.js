@@ -1,3 +1,5 @@
+"use strict"
+
 var config = require('../config')
 var encrypt = require("../helpers/encryption.js")
 var con = require('../constants')
@@ -12,8 +14,8 @@ module.exports = {
   signup(req, res, next) {
     res.sendStatus(200)
 
-    config.mailer.sendEmail(con.emails.EMAIL_CONFIRM, req.user.email, {
-        link: "http://" + req.headers.host + "/" + con.routes.CONFIRM_EMAIL + "/" + req.user.confirmEmailToken,
+    config.mailer.sendEmail(con.emails.CONFIRM, req.user.email, {
+        link: "http://" + req.headers.host + con.routes.CONFIRM_EMAIL + "?token=" + req.user.confirmEmailToken,
       })
       .catch(next)
   },
@@ -35,8 +37,8 @@ module.exports = {
         return res.status(403).json({message:"Email already confirmed"})
       res.sendStatus(202)
 
-      await config.mailer.sendEmail(con.emails.EMAIL_CONFIRM, user.email, {
-          link: "http://" + req.headers.host + "/" + con.routes.CONFIRM_EMAIL + "/" + user.confirmEmailToken,
+      await config.mailer.sendEmail(con.emails.CONFIRM, user.email, {
+          link: "http://" + req.headers.host + con.routes.CONFIRM_EMAIL + "?token=" + user.confirmEmailToken,
         })
     }
     catch (err) {
@@ -55,6 +57,7 @@ module.exports = {
         confirmEmailToken: req.body.confirmEmailToken
       }
       var fields = [
+        con.fields.EMAIL,
         con.fields.EMAIL_CONFIRMED,
         con.fields.CONFIRM_EMAIL_TOKEN
       ]
@@ -69,7 +72,7 @@ module.exports = {
 
       res.sendStatus(200)
 
-      config.mailer.sendEmail(con.emails.EMAIL_CONFIRM_THANK_YOU, user.email, {})
+      config.mailer.sendEmail(con.emails.CONFIRM_THANK_YOU, user.email, {})
 
     }
     catch(err) {
@@ -102,7 +105,7 @@ module.exports = {
       await config.database.updateUser(user)
 
       res.sendStatus(200)
-      config.mailer.sendEmail("passwordChanged", user.email, {})
+      config.mailer.sendEmail(con.emails.PASSWORD_CHANGED, user.email, {})
 
     }
     catch(err) {
@@ -125,8 +128,8 @@ module.exports = {
 
       res.sendStatus(200)
 
-      config.mailer.sendEmail("forgotPassword", user.email, {
-          link: "http://" + req.headers.host + "/" + con.routes.RESET_PASSWORD + "/" + user.resetPasswordToken
+      config.mailer.sendEmail(con.emails.FORGOT_PASSWORD, user.email, {
+          link: "http://" + req.headers.host + con.routes.RESET_PASSWORD + "?token=" + user.resetPasswordToken
         })
 
     }
@@ -161,7 +164,7 @@ module.exports = {
 
       res.sendStatus(200)
 
-      config.mailer.sendEmail("passwordChanged", user.email, {})
+      config.mailer.sendEmail(con.emails.PASSWORD_CHANGED, user.email, {})
     }
     catch(err) {
       next(err)

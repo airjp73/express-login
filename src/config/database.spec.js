@@ -1,7 +1,8 @@
+"use strict"
+
 var chai = require('chai')
 var chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-var should = chai.should()
 var expect = chai.expect
 var sinon = require('sinon')
 
@@ -54,14 +55,14 @@ describe('database module', () => {
 
     it('should reject if userModel is empty', () => {
       database.userModel = undefined
-      return database.getUser("", "").should.eventually.be.rejected
+      return expect(database.getUser("", "")).to.be.rejected
     })
 
     it('should reject if database error', () => {
       database.userModel = {findOne: sinon.stub()}
       database.userModel.findOne.throws()
 
-      return database.getUser("", "").should.be.rejected
+      return expect(database.getUser("", "")).to.be.rejected
     })
   })
 
@@ -76,14 +77,14 @@ describe('database module', () => {
     it('should reject if userModel is empty', () => {
       database.userModel = undefined
       var user = {}
-      return database.updateUser(user).should.be.rejected
+      return expect(database.updateUser(user)).to.be.rejected
     })
 
     it('should reject if database error', () => {
       var user = {save: sinon.stub()}
       user.save.throws()
 
-      return database.updateUser(user).should.be.rejected
+      return expect(database.updateUser(user)).to.be.rejected
     })
   })
 
@@ -113,7 +114,7 @@ describe('database module', () => {
     it('should reject if userModel is undefined', () => {
       database.userModel = undefined
       var user = {}
-      return database.newUser(user).should.be.rejected
+      return expect(database.newUser(user)).to.be.rejected
     })
 
     it('should reject if database error', () => {
@@ -124,7 +125,7 @@ describe('database module', () => {
       }
       var user = {}
 
-      return database.newUser(user).should.be.rejected
+      return expect(database.newUser(user)).to.be.rejected
     })
   })
 })

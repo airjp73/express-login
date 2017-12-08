@@ -1,10 +1,11 @@
+"use strict"
+
 var chai = require('chai')
 var chaiAsPromised = require('chai-as-promised')
 var chaiHttp = require('chai-http')
 chai.use(chaiAsPromised)
 chai.use(chaiHttp)
 
-var should = chai.should()
 var expect = chai.expect
 var sinon = require('sinon')
 var mongoose = require('mongoose')
@@ -13,7 +14,6 @@ var config = require('../config')
 var con = require("../constants")
 var User   = require('../../exampleServer/models/user.js')
 var encrypt = require('../helpers/encryption.js')
-//var Email  = require('../../exampleServer/emails')
 var app = require('../../exampleServer/server.js')
 var server = {}
 
@@ -35,6 +35,7 @@ var mockUser = async () => {
 }
 
 const COOKIE = "connect.sid"
+var mail = {}
 
 //Routes
   //login
@@ -50,12 +51,15 @@ if (process.env.NODE_ENV == 'test') {
 
   describe('route testing', () => {
     before(() => {
-
+      mail = sinon.stub(config.mailer, "sendEmail")
     })
     beforeEach(async () => {
+      mail.reset()
       await User.collection.remove({email: TEST_USER.email})
       server = chai.request.agent(app)
-
+    })
+    after(() => {
+      mail.restore()
     })
 
     ////////////////////////////////////////////////////////////////////////////
@@ -155,16 +159,13 @@ if (process.env.NODE_ENV == 'test') {
           email: TEST_USER.email,
           password: TEST_USER.password
         }
-        var mail = sinon.stub(config.mailer, "sendEmail")
-        var url = "http://127.0.0.1:" + process.env.PORT +"/" + con.routes.CONFIRM_EMAIL + "/" + TEST_USER.confirmEmailToken
+        var url = "http://127.0.0.1:" + process.env.PORT + con.routes.CONFIRM_EMAIL + "?token=" + TEST_USER.confirmEmailToken
 
         await server.post("/auth/login").send(fields)
         await server.post("/auth/resendConfirmation")
 
         sinon.assert.calledOnce(mail)
         expect(mail.args[0][2].link).to.equal(url)
-
-        mail.restore()
       })
 
       it("should return 403 if already confirmed", async () => {
@@ -233,6 +234,7 @@ if (process.env.NODE_ENV == 'test') {
         var user = await config.database.getUser({email:TEST_USER.email}, [con.fields.EMAIL, con.fields.PASSWORD])
         var passChanged = encrypt.matchPassword(TEST_USER.newPassword, user.password)
         expect(passChanged).to.be.true
+        sinon.assert.calledOnce(mail)
       })
 
       it("should return 401 on invalid user info", async () => {
@@ -263,7 +265,6 @@ if (process.env.NODE_ENV == 'test') {
     describe("forgotPassword", () => {
       it("should set resetPasswordToken and resetPasswordTokenExpires and send email with link", async () => {
         await mockUser()
-        var mail = sinon.stub(config.mailer, "sendEmail")
         var fields = {
           email: TEST_USER.email
         }
@@ -275,10 +276,9 @@ if (process.env.NODE_ENV == 'test') {
         expect(user.resetPasswordToken).to.exist
         expect(user.resetPasswordExpires).to.exist
 
-        var url = "http://127.0.0.1:" + process.env.PORT +"/" + con.routes.RESET_PASSWORD + "/" + user.resetPasswordToken
+        var url = "http://127.0.0.1:" + process.env.PORT + con.routes.RESET_PASSWORD + "?token=" + user.resetPasswordToken
         sinon.assert.calledOnce(mail)
         expect(mail.args[0][2].link).to.equal(url)
-        mail.restore()
       })
 
       it("should return 404 if no user with that email", async () => {
@@ -296,7 +296,6 @@ if (process.env.NODE_ENV == 'test') {
     ////////////////////////////////////////////////////////////////////////////
     describe("resetPassword", () => {
       it("should change password to newPassword field and send an email", async () => {
-        var mail = sinon.stub(config.mailer, "sendEmail")
         var token = "testToken"
 
         var user = await mockUser()
@@ -314,11 +313,9 @@ if (process.env.NODE_ENV == 'test') {
         user = await config.database.getUser({_id: user.id}, [con.fields.PASSWORD])
         expect(encrypt.matchPassword(TEST_USER.newPassword, user.password)).to.be.true
         sinon.assert.calledOnce(mail)
-        mail.restore()
       })
 
       it("should return 403 if token expired", async () => {
-        var mail = sinon.stub(config.mailer, "sendEmail")
         var token = "testToken"
 
         var user = await mockUser()
@@ -336,12 +333,10 @@ if (process.env.NODE_ENV == 'test') {
         user = await config.database.getUser({_id: user.id}, [con.fields.PASSWORD])
         expect(encrypt.matchPassword(TEST_USER.password, user.password)).to.be.true
         sinon.assert.notCalled(mail)
-        mail.restore()
 
       })
 
       it("should return 404 if no matching user", async () => {
-        var mail = sinon.stub(config.mailer, "sendEmail")
         var fields = {
           resetPasswordToken: "nomatch",
           newPassword: TEST_USER.newPassword
@@ -350,7 +345,6 @@ if (process.env.NODE_ENV == 'test') {
         var res = await server.post("/auth/resetPassword").send(fields)
         expect(res).to.have.status(404)
         sinon.assert.notCalled(mail)
-        mail.restore()
       })
     })
 

@@ -13,7 +13,7 @@ require('env2')(__dirname + "/.env")
 
 //User Model and email-templates object
 var User = require('./models/user.js')
-var Email = require('./emails')
+var Email = require('./emails/')
 
 
 /*
@@ -59,7 +59,6 @@ app.use("/auth", expressLogin)
   Start listening
 */
 var port = process.env.PORT || 3000
-//module.exports = app
 module.exports = app.listen(port, function() {
   console.log("Listening on port " + port)
 })
