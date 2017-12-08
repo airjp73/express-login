@@ -6,7 +6,7 @@ var passport = require("passport")
 
 //middleware
 var requireLoggedIn = require("./middleware/requireLoggedIn.js")
-var requireFields = require("./middleware/requireFields.js")
+var requireFields = require("require-fields")
 
 //modules
 var controllers = require("./routeControllers.js")
