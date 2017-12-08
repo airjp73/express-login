@@ -123,7 +123,7 @@ module.exports = {
       if (!user)
         return res.status(404).json({message: "no user with that email"})
       user.resetPasswordToken = encrypt.genToken(con.encrypt.RESET_PASS_TOKEN_BITS)
-      user.resetPasswordExpires = con.encrypt.RESET_PASS_TOKEN_DUR
+      user.resetPasswordExpires = Date.now() + con.encrypt.RESET_PASS_TOKEN_DUR
       await config.database.updateUser(user)
 
       res.sendStatus(200)

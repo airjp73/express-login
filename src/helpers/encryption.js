@@ -5,7 +5,7 @@ var bcrypt = require("bcrypt-nodejs")
 
 module.exports = {
   genToken(bits) {
-    return crypto.randomBytes(16).toString('hex')
+    return crypto.randomBytes(bits).toString('hex')
   },
 
   hashPassword(password) {
