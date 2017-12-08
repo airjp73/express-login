@@ -1,4 +1,4 @@
-/*var sinon = require('sinon')
+var sinon = require('sinon')
 var requireLoggedIn = require('./requireLoggedIn')
 
 var sandbox = sinon.createSandbox()
@@ -29,4 +29,3 @@ describe('requireLoggedIn middleware', () => {
     sinon.assert.notCalled(res.sendStatus)
   })
 })
-*/

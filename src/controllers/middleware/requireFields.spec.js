@@ -1,4 +1,4 @@
-/*var sinon = require('sinon')
+var sinon = require('sinon')
 var chai = require('chai')
 var expect = chai.expect
 var requireFields = require('./requireFields.js')
@@ -14,11 +14,6 @@ res.status.returns(res)
 
 
 describe('requireFields middleware', () => {
-  //should call next when all necessary fields are provided
-  //should call next even if extra, unnecessary fields are provided
-  //should send 400 and an array of missing fields if fields not provided
-  //should send 400 and an array of missing fields if fields are provided but empty
-  //should throw an error if no required fields are specified by the server
   afterEach(() => {
     sandbox.resetHistory()
   })
@@ -75,4 +70,3 @@ describe('requireFields middleware', () => {
     expect(requireFields, "").to.throw()
   })
 })
-*/
