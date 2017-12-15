@@ -39,9 +39,12 @@ describe('sendEmail', () => {
     var template = "test"
     var target = "test"
     var vars = {hello: "test"}
+    var log = sinon.stub(console, "warn")
 
     var info = await mailer.sendEmail()
     expect(info).to.be.undefined
+    sinon.assert.called(log)
+    log.restore()
   })
 
   describe('init', () => {
