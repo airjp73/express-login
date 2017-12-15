@@ -2,7 +2,6 @@
 
 var chai = require('chai')
 var expect = chai.expect
-var sinon = require('sinon')
 
 var express = require('express')
 var router = require('./router.js')
