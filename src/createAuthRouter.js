@@ -3,7 +3,6 @@
 
 var express  = require('express')
 var passport = require('passport')
-var requireLoggedIn = require('./middleware/requireLoggedIn.js')
 
 module.exports = () => {
   var router = express.Router()
