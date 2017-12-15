@@ -1,3 +1,5 @@
+"use strict"
+
 //This creates a router that the user can add routes to in order to create
 //routes that require authentication
 
