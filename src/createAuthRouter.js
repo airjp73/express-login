@@ -5,6 +5,7 @@
 
 var express  = require('express')
 var passport = require('passport')
+var requireLoggedIn = require('./requireLoggedIn')
 
 module.exports = () => {
   var router = express.Router()
