@@ -5,7 +5,7 @@
   "main": "./src",
   "scripts": {
     "start": "node server.js",
-    "test": "cross-env NODE_ENV=test TEST_AUTH_ROUTES=true mocha src/**/**.spec.js --exit"
+    "test": "mocha 'src/**/*.spec.js'"
   },
   "author": "",
   "license": "ISC",
