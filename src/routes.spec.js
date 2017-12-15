@@ -1,4 +1,4 @@
-"use strict"
+/*"use strict"
 
 //These tests should only go off when actually testing this module
 //I don't want to be inadvertantly responsible for blowing up someones database
@@ -358,3 +358,4 @@ if (process.env.TEST_AUTH_ROUTES) {
 
   })//end describe
 }
+*/

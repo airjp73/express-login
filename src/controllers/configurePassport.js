@@ -1,13 +1,14 @@
 "use strict"
 
 var LocalStrategy = require("passport-local").Strategy
+var OAuth2Strategy = require("passsport-google-oauth").OAuth2Strategy
 var passport = require("passport")
 
 var config = require('../config')
 var encrypt = require("../helpers/encryption.js")
 var con = require("../constants")
 
-module.exports = function() {
+module.exports = function(options) {
   passport.serializeUser((user, done) => {
     done(null, user.id)
   })
@@ -19,7 +20,7 @@ module.exports = function() {
   })
 
   //Local Signup
-  passport.use(con.passport.LOCAL_SIGNUP,  new LocalStrategy({
+  /*passport.use(con.passport.LOCAL_SIGNUP,  new LocalStrategy({
       usernameField : con.fields.EMAIL,
       passwordField : con.fields.PASSWORD,
       passReqToCallback : true
@@ -80,5 +81,23 @@ module.exports = function() {
         done(err)
       }
     }
-  ))
+  ))*/
+
+  //Oauth2
+  passport.use("oauth2", new OAuth2Strategy({
+    clientID    : options.oauth2.clientID,
+    clientSecret: options.oauth2.clientSecret,
+    callbackURL : options.oauth2.callbackURL
+  },
+  async (token, refreshToken, profile, done) => {
+    try {
+      var user = await config.database.getUser({[con.fields.OAUTH2_TOKEN]})
+      if (user)
+        return done(null, user)
+      return await config.database.newUser( {oauth2Token : token} )
+    }
+    catch(err) {
+      return done(err)
+    }
+  }))
 }

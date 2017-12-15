@@ -56,6 +56,11 @@ var authRouter = require("./testAuthRouter.js")(expressLogin)
 app.use("/auth", expressLogin.router)
 app.use("/test", authRouter)
 
+app.use((err, req, res, next) => {
+  console.log(err)
+  res.sendStatus(500)
+})
+
 
 
 /*
