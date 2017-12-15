@@ -5,7 +5,7 @@ var express = require("express")
 var passport = require("passport")
 
 //modules
-var con = require("../constants")
+var con = require("./constants")
 
 //router setup
 var auth = express.Router()
