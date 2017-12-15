@@ -1,5 +1,5 @@
 {
-  "name": "mevn-todos-api",
+  "name": "express-login",
   "version": "1.0.0",
   "description": "Fully configurable, pre-made login system for express",
   "main": "./src",
