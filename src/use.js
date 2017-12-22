@@ -2,9 +2,11 @@
 
 //Allow user to expressLogin.use() for strategies
 
-var config = require('./config')
 var passport = require('passport')
+var config = require('./config')
+var router = require('./router')
 
 module.exports = (strategy) => {
-  strategy.init(config, passport)
+  var routes = strategy.init(config, passport)
+  router.use(routes)
 }
