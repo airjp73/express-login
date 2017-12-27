@@ -9,7 +9,7 @@ var router = require('./router')
 sinon.stub(router, "use")
 
 
-describe("use", () => {
+describe("useStrategy", () => {
   it("should export a function", () => {
     expect(use).to.be.a('function')
   })
