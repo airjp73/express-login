@@ -2,6 +2,7 @@
 
 var config = require('./config')
 var router = require('./router.js')
+var use = require('./use')
 var configPassport = require('./configPassport')
 
 configPassport()
@@ -17,7 +18,7 @@ exports = module.exports = (options) => {
 }
 
 exports.createAuthRouter = require('./createAuthRouter')
-exports.useStrategy   = require('./useStrategy')
-exports.useDatabase   = require('./useDatabase')
-exports.useMailer     = require('./useMailer')
-exports.useEncryption = require('./useEncryption')
+exports.useStrategy   = use.strategy
+exports.useDatabase   = use.database
+exports.useMailer     = use.mailer
+exports.useEncryption = use.encryption

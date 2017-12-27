@@ -5,13 +5,13 @@ var expect = chai.expect
 var sinon = require('sinon')
 
 var useStrategy = require('./useStrategy')
-var router = require('./router')
+var router = require('../router')
 sinon.stub(router, "use")
 
 
 describe("useStrategy", () => {
   it("should export a function", () => {
-    expect(use).to.be.a('function')
+    expect(useStrategy).to.be.a('function')
   })
 
   describe("function behavior", () => {
@@ -20,7 +20,7 @@ describe("useStrategy", () => {
       init: sinon.stub().returns(routes)
     }
     before(() => {
-      use(strategy)
+      useStrategy(strategy)
     })
 
     it("should call strategy.init", () => {
