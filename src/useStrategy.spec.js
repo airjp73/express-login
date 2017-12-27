@@ -4,7 +4,7 @@ var chai = require('chai')
 var expect = chai.expect
 var sinon = require('sinon')
 
-var use = require('./use')
+var useStrategy = require('./useStrategy')
 var router = require('./router')
 sinon.stub(router, "use")
 
