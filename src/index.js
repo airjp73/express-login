@@ -5,6 +5,7 @@ var router = require('./router.js')
 var use = require('./use')
 var configPassport = require('./configPassport')
 
+//need to configure serializeUser and deserializeUser
 configPassport()
 
 exports = module.exports = (options) => {
@@ -17,6 +18,7 @@ exports = module.exports = (options) => {
   }
 }
 
+//Exposed functions
 exports.createAuthRouter = require('./createAuthRouter')
 exports.useStrategy   = use.strategy
 exports.useDatabase   = use.database
