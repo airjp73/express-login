@@ -18,11 +18,11 @@ describe("src", () => {
     expect(index).to.be.a('function')
   })
 
-  it("function should call config.init and return an object", () => {
+  it("function should call config.init and return a function", () => {
     var options = {}
     var obj = index(options)
 
     sinon.assert.calledWith(config.init, options)
-    expect(obj).to.be.an('object')
+    expect(obj).to.be.an('function')
   })
 })
