@@ -4,7 +4,7 @@ var chai = require('chai')
 var expect = chai.expect
 
 var express = require('express')
-var createAuthRouter = require('./createAuthRouter.js')
+var createAuthRouter = require('./index.js')
 
 describe("createAuthRouter", () => {
   it("should export a function", () => {
