@@ -1,5 +1,5 @@
 var sinon = require('sinon')
-var requireLoggedIn = require('./requireLoggedIn')
+var requireLoggedIn = require('./requireLoggedIn.js')
 
 var sandbox = sinon.createSandbox()
 var req = {isAuthenticated: sandbox.stub()}

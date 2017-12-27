@@ -12,5 +12,6 @@ module.exports = {
     this.mailer   = options.mailer    || require('./mailer.js')
     if (!options.mailer)
       this.mailer.init(options)
-  }
+  },
+  encrypt: require('./encryption')
 }

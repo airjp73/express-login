@@ -1,5 +1,0 @@
-module.exports = {
-  CONFIRM_TOKEN_BITS : 16,
-  RESET_PASS_TOKEN_BITS : 32,
-  RESET_PASS_TOKEN_DUR : 360000
-}

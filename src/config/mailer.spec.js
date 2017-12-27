@@ -24,6 +24,7 @@ describe('sendEmail', () => {
     var template = "test"
     var target = "test"
     var vars = {hello: "test"}
+    var log = sinon.stub(console, "log")
 
     var info = await mailer.sendEmail(template, target, vars)
     sinon.assert.calledOnce(mailer.email.send)
@@ -32,6 +33,7 @@ describe('sendEmail', () => {
     expect(args.message.to) .to.equal(target)
     expect(args.locals)     .to.equal(vars)
     expect(info).to.not.be.undefined
+    log.restore()
   })
 
   it('should exit with no error and return no info if mailer.email.send is undefined or empty', async () => {
@@ -39,9 +41,12 @@ describe('sendEmail', () => {
     var template = "test"
     var target = "test"
     var vars = {hello: "test"}
+    var log = sinon.stub(console, "warn")
 
     var info = await mailer.sendEmail()
     expect(info).to.be.undefined
+    sinon.assert.called(log)
+    log.restore()
   })
 
   describe('init', () => {
