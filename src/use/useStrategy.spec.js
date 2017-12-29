@@ -14,7 +14,27 @@ describe("useStrategy", () => {
     expect(useStrategy).to.be.a('function')
   })
 
-  describe("function behavior", () => {
+  describe("function behavior 2 args", () => {
+    var routes = {}
+    var routeStr = "/test"
+    var strategy = {
+      init: sinon.stub().returns(routes)
+    }
+    before(() => {
+      useStrategy(routeStr, strategy)
+    })
+
+    it("should call strategy.init", () => {
+      sinon.assert.calledOnce(strategy.init)
+    })
+
+    it("should call router.use with routeStr and routes", () => {
+      sinon.assert.calledWith(router.use, routeStr, routes)
+      router.use.reset()
+    })
+  })
+
+  describe("function behavior 1 arg", () => {
     var routes = {}
     var strategy = {
       init: sinon.stub().returns(routes)

@@ -11,9 +11,15 @@ var router = require('../router')
 module.exports = (routeStr, strategy) => {
   //Check if only one argument
   //by rights, the optional argument should be second but this function mimics app.use
-  if (!strategy)
+  if (!strategy) {
     strategy = routeStr
+    routeStr = undefined
+  }
 
   var strategyRouter = strategy.init(config, passport)
-  router.use(routeStr, strategyRouter)
+
+  if (routeStr)
+    router.use(routeStr, strategyRouter)
+  else
+    router.use(strategyRouter)
 }
