@@ -16,7 +16,7 @@ module.exports = (routeStr, strategy) => {
     routeStr = undefined
   }
 
-  var strategyRouter = strategy.init(config, passport)
+  var strategyRouter = strategy(config, passport)
 
   if (routeStr)
     router.use(routeStr, strategyRouter)
