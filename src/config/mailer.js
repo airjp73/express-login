@@ -25,17 +25,25 @@ module.exports = {
       return
     }
 
-    var info = await this.email.send({
-      template: template,
-      message: {
-        to: target
-      },
-      locals: vars
-    })
+    //send email
+    try {
 
-    if (this.logEmails)
-      console.log("Message sent: %s", info.messageId)
+      var info = await this.email.send({
+        template: template,
+        message: {
+          to: target
+        },
+        locals: vars
+      })
 
-    return info
+      if (this.logEmails)
+        console.log("Message sent: %s", info.messageId)
+      return info
+
+    }
+    catch(err) {
+      console.error(err)
+    }
+
   }
 }
