@@ -1,2 +1,5 @@
-# express-login
-Fully configurable, pre-made login system for express
+# express-reuse
+A lightweight framework that makes reusing pieces of your express app easy.
+
+###Getting Started
+Coming soon!
