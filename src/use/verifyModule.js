@@ -11,5 +11,5 @@ module.exports = (mod, funcs) => {
   })
 
   if (missing.length > 0)
-    throw new Error("Express-login module missing necessary functions: " + missing.join(", "))
+    throw new Error("Express-reuse module missing necessary functions: " + missing.join(", "))
 }

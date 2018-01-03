@@ -1,7 +1,7 @@
 {
-  "name": "express-login",
+  "name": "express-reuse",
   "version": "1.0.0",
-  "description": "Fully configurable, pre-made login system for express",
+  "description": "Lightweight express app framework that makes using and creating reusable routes easy.",
   "main": "./src",
   "scripts": {
     "start": "node server.js",
