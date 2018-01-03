@@ -7,6 +7,10 @@
     "start": "node server.js",
     "test": "mocha src/**/*.spec.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/airjp73/express-reuse.git"
+  },
   "author": "Aaron Pettengill",
   "license": "MIT",
   "dependencies": {
