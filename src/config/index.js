@@ -3,6 +3,8 @@
 //Config object that contains the modules that get used by strategies
 //These are all replacable with custom modules
 
+var serializers = require('../serializers')
+
 module.exports = {
   init(options) {
     this.database.init(options)
@@ -11,5 +13,9 @@ module.exports = {
 
   database: require('./database'),
   mailer:   require('./mailer'),
-  encrypt:  require('./encryption')
+  encrypt:  require('./encryption'),
+
+  //expose serializer to strategies
+  useSerializer: serializers.useSerializer,
+  useDeserializer: serializers.useDeserializer
 }

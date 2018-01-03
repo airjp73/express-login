@@ -3,13 +3,15 @@
 var config = require('./config')
 var router = require('./router.js')
 var use = require('./use')
-var configPassport = require('./configPassport')
+var serializers = require('./serializers')
 
-//need to configure serializeUser and deserializeUser
-configPassport()
 
 exports = module.exports = (options) => {
+  //config object
   config.init(options)
+
+  //serializeUser and deserializeUser
+  serializers.init(config, options)
 
   //return a middleware function to allow
   //app.use( expressLogin(options) )
