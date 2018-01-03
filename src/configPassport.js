@@ -6,7 +6,7 @@ module.exports = () => {
     done(null, user.id)
   })
 
-  passport.deserializeUser(async (id, done) => {
+  passport.deserializeUser((id, done) => {
     done(null, {_id: id})
   })
 }
