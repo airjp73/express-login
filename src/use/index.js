@@ -2,8 +2,11 @@
 
 var config = require('../config')
 var verifyModule = require('./verifyModule')
+var useModule = require('./useModule')
 
 ////Module Replacers
+//These replacers check that the module is compatible with 'official' strategies
+//The same effect can be achieved with useModule but without checking
 var useDatabase = (database) => {
   verifyModule(database, [
     'getUser',
@@ -35,5 +38,6 @@ module.exports = {
   database:   useDatabase,
   encryption: useEncryption,
   mailer:     useMailer,
+  customModule: useModule,
   strategy:   require('./useStrategy')
 }

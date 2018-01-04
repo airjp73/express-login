@@ -26,3 +26,4 @@ exports.useStrategy   = use.strategy
 exports.useDatabase   = use.database
 exports.useMailer     = use.mailer
 exports.useEncryption = use.encryption
+exports.useModule     = use.customModule
