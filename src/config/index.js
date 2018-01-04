@@ -7,6 +7,7 @@ var serializers = require('../serializers')
 
 module.exports = {
   init(options) {
+    this.options = options
     this.database.init(options)
     this.mailer.init(options)
   },

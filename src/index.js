@@ -7,6 +7,9 @@ var serializers = require('./serializers')
 
 
 exports = module.exports = (options) => {
+  if (!options)
+    options = {}
+    
   //config object
   config.init(options)
 
