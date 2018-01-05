@@ -39,6 +39,8 @@ app.use(expressSession({
 
 This step is optional. If you don't want to use transactional emails, simply include `noEmail: true` in the options object when we set up `express-reuse`.
 
+For a more detailed explanation on what can be done here, see the documentation for [`email-templates`](https://github.com/niftylettuce/email-templates). The emailOptions object we create in this section gets passed directly to `email-templates`.
+
 First we need a [`nodemailer`](https://www.npmjs.com/package/nodemailer) transport. This example uses [ethereal.email](https://ethereal.email/).
 
 ```javascript
@@ -52,7 +54,19 @@ var transporter = nodemailer.createTransport({
 })
 ```
 
-And then we create our emailOptions object. `express-reuse` uses [`email-templates`](https://github.com/niftylettuce/email-templates) for managing emails. See the documentation for that for more details. This is a minimal example.
+Next we need to setup a folder with our email templates. The templates we need will depend on the strategy being used. In this case, `express-reuse-local-login` requires four templates.
+
+```
+emails
+  - emailConfirm
+  - emailConfirmThankYou
+  - forgotPassword
+  - passwordChanged
+```
+
+See the [`email-templates`](https://github.com/niftylettuce/email-templates) documentation for a more detailed explanation about how to set these up.
+
+Finally, we create our emailOptions object.
 
 ```javascript
 var emailOptions = {
