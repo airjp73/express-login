@@ -11,8 +11,7 @@ var useDatabase = (database) => {
   verifyModule(database, [
     'getUser',
     'updateUser',
-    'newUser',
-    'init'
+    'newUser'
   ])
   config.database = database
 }
@@ -28,8 +27,7 @@ var useEncryption = (encrypt) => {
 
 var useMailer = (mailer) => {
   verifyModule(mailer, [
-    'sendEmail',
-    'init'
+    'sendEmail'
   ])
   config.mailer = mailer
 }
