@@ -1,5 +1,5 @@
 # express-reuse
-A lightweight framework that makes reusing pieces of your express app easy. For detailed documentation, go [here](https://github.com/airjp73/express-reuse/wiki)
+A lightweight framework that makes reusing pieces of your express app easy. More detailed documentation available [here](https://github.com/airjp73/express-reuse/wiki)
 
 ##  Getting Started
 The simplest way to use `express-reuse` is to install a strategy. For now, let's use [`express-reuse-local-login`](https://github.com/airjp73/express-reuse-local-login).
@@ -82,7 +82,7 @@ var emailOptions = {
 
 ### Connect to database
 
-Out of the box, `express-reuse` works with [`mongoose`](https://www.npmjs.com/package/mongoose). But it can be easily configured to work with any database you want. If you want to work with another database module, see the documentation [here](#placeholder).
+Out of the box, `express-reuse` works with [`mongoose`](https://www.npmjs.com/package/mongoose). But it can be easily configured to work with any database you want. If you want to work with another database module, see the documentation [here](https://github.com/airjp73/express-reuse/wiki/Using-a-database-other-than-mongoose).
 
 First, connect to the database.
 
