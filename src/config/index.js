@@ -8,8 +8,12 @@ var serializers = require('../serializers')
 module.exports = {
   init(options) {
     this.options = options
-    this.database.init(options)
-    this.mailer.init(options)
+
+    //init is not mandatory for custom modules
+    if (this.database.init)
+      this.database.init(options)
+    if (this.mailer.init)
+      this.mailer.init(options)
   },
 
   database: require('./database'),
