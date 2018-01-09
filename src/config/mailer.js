@@ -17,7 +17,7 @@ module.exports = {
   email: undefined,
   noEmail: false,
   logEmails: true,
-  async sendEmail(template, target, vars) {
+  async sendEmail(template, target, vars = {}) {
     //check that email is set up
     if (!this.email || Object.keys(this.email).length == 0) {
       if (!this.noEmail)
