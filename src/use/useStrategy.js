@@ -4,7 +4,6 @@
 //Called just like app.use or router.use
 //example: expressLogin.useStrategy('/local', localStrategy)
 
-var passport = require('passport')
 var config = require('../config')
 var router = require('../router')
 
@@ -17,7 +16,7 @@ module.exports = (routeStr, strategy) => {
     routeStr = undefined
   }
 
-  var strategyRouter = strategy(config, passport)
+  var strategyRouter = strategy(config)
 
   if (routeStr)
     router.use(routeStr, strategyRouter)
